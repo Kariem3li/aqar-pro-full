@@ -1,0 +1,86 @@
+@import "tailwindcss";
+/* تأثير الزوم البطيء للصورة */
+@keyframes ken-burns {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.15); /* تكبير بنسبة 15% فقط للحفاظ على الجودة */
+  }
+}
+
+.animate-ken-burns {
+  animation: ken-burns 20s ease-out infinite alternate; /* حركة بطيئة جداً ومستمرة */
+}
+
+/* تحسين شكل نقاط السلايدر (Pagination) */
+.swiper-pagination-bullet {
+  background: white !important;
+  opacity: 0.5;
+  width: 10px;
+  height: 10px;
+}
+.swiper-pagination-bullet-active {
+  opacity: 1;
+  background: #fbbf24 !important; /* لون ذهبي */
+  width: 25px; /* النقطة النشطة تكون عريضة */
+  border-radius: 5px;
+  transition: all 0.3s ease;
+}
+@theme {
+  /* تعريف ألوان البراند مباشرة هنا (أسرع وأضمن) */
+  --color-brand-primary: #0f172a;
+  --color-brand-secondary: #334155;
+  --color-brand-accent: #d97706;
+  --color-brand-goldLight: #fffbeb;
+  --color-brand-dark: #020617;
+  --color-brand-light: #f8fafc;
+  --color-brand-surface: #ffffff;
+
+  /* ربط الخط بمتغير Next.js */
+  --font-sans: var(--font-ibm-arabic), ui-sans-serif, system-ui;
+}
+
+/* تحسين شكل السكرول بار */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+@layer components {
+  /* عناوين الأقسام */
+  .section-title {
+    @apply text-lg font-black text-brand-primary border-b border-gray-100 pb-3 mb-6 flex items-center gap-2;
+  }
+  
+  /* توحيد شكل حقول الإدخال */
+  .input-field {
+    @apply w-full h-12 border border-gray-200 rounded-xl px-4 text-sm font-medium outline-none 
+    focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all 
+    bg-white text-brand-primary placeholder:text-gray-400;
+  }
+
+  /* فلتر البحث الصغير */
+  .input-filter {
+    @apply w-full h-10 border rounded-lg px-2 text-xs font-bold outline-none 
+    focus:border-brand-accent border-gray-300 bg-white text-brand-primary;
+  }
+
+  /* تسمية الوحدات */
+  .unit-label {
+    @apply absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs font-bold pointer-events-none;
+  }
+
+  /* أزرار أساسية */
+  .btn-primary {
+    @apply w-full h-14 bg-brand-primary text-white rounded-2xl font-black text-base
+    hover:bg-brand-secondary transition-all duration-300 shadow-lg 
+    flex items-center justify-center gap-2 active:scale-[0.98];
+  }
+
+  .btn-accent {
+    @apply w-full h-14 bg-brand-accent text-white rounded-2xl font-black text-base
+    hover:bg-amber-700 transition-all duration-300 shadow-lg shadow-brand-accent/20
+    flex items-center justify-center gap-2 active:scale-[0.98];
+  }
+}
