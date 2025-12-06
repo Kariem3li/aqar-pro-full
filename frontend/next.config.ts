@@ -14,8 +14,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'http',
-        hostname: '192.168.1.8', // غيرة بالـ IP بتاعك لو اختلف
-        port: '8000',
+        hostname: 'kariem.pythonanywhere.com', // غير ده باسم موقعك        port: '8000',
         pathname: '/media/**',
       },
       {

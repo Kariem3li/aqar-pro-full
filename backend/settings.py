@@ -56,14 +56,11 @@ TEMPLATES = [
 WSGI_APPLICATION = 'backend.wsgi.application'
 
 # قاعدة البيانات (تأكد من إنشاء داتابيز جديدة باسم aqar_db في pgAdmin)
+# إعدادات قاعدة البيانات المجانية (SQLite)
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'kariem1',      # نفس داتابيزك القديمة أو اعمل واحدة جديدة
-        'USER': 'postgres',
-        'PASSWORD': 'kar352001',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
