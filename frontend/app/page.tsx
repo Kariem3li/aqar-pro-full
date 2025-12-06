@@ -1,22 +1,20 @@
 "use client";
+
+import React, { Suspense, useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import BottomNav from "@/components/BottomNav";
 import ListingCard from "@/components/ListingCard";
 import AdvancedFiltersModal from "@/components/AdvancedFiltersModal";
 import { Search, Loader2, AlertCircle } from "lucide-react";
-import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation"; 
+import HeroSlider from '../components/HeroSlider';
 
-// 👇👇👇 تم إضافة استدعاء السلايدر هنا 👇👇👇
-// ملحوظة: لو ظهر خطأ في المسار، جرب تستخدم @/components/HeroSlider
-import HeroSlider from '../components/HeroSlider'; 
+// 👇 1. استيراد الكونفيج عشان يشتغل لايف (مهم جداً بدلاً من الـ IP الثابت)
+import { API_URL, getFullImageUrl } from '@/lib/config';
 
-// ⚠️ غير الرقم ده بـ IP جهازك
-const API_URL = "http://192.168.1.8:8000/api"; 
-const SERVER_URL = "http://192.168.1.8:8000";
-
-export default function Home() {
+// 👇 2. فصلنا محتوى الصفحة في دالة لوحدها
+function HomeContent() {
   const searchParams = useSearchParams();
   const [listings, setListings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -31,14 +29,14 @@ export default function Home() {
         }
         
         const queryString = params.toString();
+        // استخدام API_URL من الكونفيج
         const url = `${API_URL}/listings/?${queryString}`;
         
-        // 🛑 إضافة الهيدر عشان الباك إند يعرف مين اليوزر ويحسب is_favorite صح
         const headers: any = { "Content-Type": "application/json" };
         const token = localStorage.getItem('token');
         if (token) headers["Authorization"] = `Token ${token}`;
 
-        const res = await fetch(url, { headers }); // 👈 مررنا الهيدر هنا
+        const res = await fetch(url, { headers });
         const data = await res.json();
         
         const results = Array.isArray(data.results) ? data.results : data.results || data; 
@@ -84,27 +82,15 @@ export default function Home() {
       };
   };
 
-  // دالة مساعدة لضبط رابط الصورة
-  const getImageUrl = (path: string) => {
-    if (!path) return "https://via.placeholder.com/400x300?text=No+Image"; 
-    if (path.startsWith("http")) return path;
-    return `${SERVER_URL}${path}`;
-  };
-
   return (
     <main className="min-h-screen bg-brand-light pb-32">
       <Navbar />
       
-      {/* 👇👇👇 السلايدر السينمائي (VIP) تم وضعه هنا 👇👇👇 */}
-      {/* هيظهر فقط لو فيه بيانات، ولو مفيش هيختفي ولا كأنه موجود */}
       <div className="mb-0">
          <HeroSlider />
       </div>
 
-      {/* Hero Section & Search Header - تم تحديث الألوان للهوية الجديدة */}
-      {/* قمت بإزالة rounded-t-none لضمان التناسق إذا لم يظهر السلايدر */}
       <div className="bg-brand-primary pt-28 pb-20 px-4 rounded-b-[3rem] shadow-2xl relative overflow-hidden text-center">
-        {/* دوائر خلفية جمالية */}
         <div className="absolute top-0 right-0 w-80 h-80 bg-brand-accent/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none"></div>
         
@@ -116,19 +102,17 @@ export default function Home() {
             نقدم لك نخبة من الفرص الاستثمارية في المدن الجديدة. أراضٍ، مصانع، ووحدات سكنية تلبي طموحك.
           </p>
           
-          {/* شريط البحث السريع (يفتح الفلتر) */}
           <div className="flex items-center justify-center mt-10">
              <div className="bg-white p-2 pr-5 rounded-full flex items-center gap-3 w-full max-w-md shadow-2xl transform hover:scale-[1.02] transition duration-300 ring-4 ring-white/10">
                 <Search className="text-brand-secondary w-5 h-5" />
                 <span className="flex-1 text-right text-gray-400 text-sm font-medium cursor-pointer" onClick={() => document.getElementById('filter-btn')?.click()}>ابحث عن عقارك...</span>
-                <AdvancedFiltersModal /> {/* زر الفلتر هنا */}
+                <AdvancedFiltersModal />
              </div>
           </div>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 -mt-8 relative z-20">
-         {/* شريط إحصائيات سريع (اختياري) */}
          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-4 flex justify-around items-center text-center">
             <div>
                <p className="text-brand-accent font-black text-xl">+{listings.length}</p>
@@ -179,7 +163,8 @@ export default function Home() {
                             title={item.title}
                             address={address}
                             price={Number(item.price).toLocaleString()}
-                            image={getImageUrl(item.thumbnail)}
+                            // 👇 استخدام دالة الصور من الكونفيج
+                            image={getFullImageUrl(item.thumbnail)}
                             offerType={item.offer_type === 'Sale' ? 'بيع' : 'إيجار'}
                             isFinanceEligible={item.is_finance_eligible}
                             isSold={item.status === 'Sold'}
@@ -193,5 +178,18 @@ export default function Home() {
 
       <BottomNav />
     </main>
+  );
+}
+
+// 👇 3. الدالة الرئيسية (الغلاف) لحل مشكلة Vercel Build
+export default function Home() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="w-12 h-12 text-brand-primary animate-spin" />
+      </div>
+    }>
+      <HomeContent />
+    </Suspense>
   );
 }
